@@ -13,6 +13,11 @@ config :unboard_ql, UnboardQl.Repo,
   password: "unboard_dev",
   hostname: "localhost"
 
+config :cors_plug,
+  origin: ["https://www.unboard.today", "http://www.unboard.today", "http://localhost:3000", "http://localhost:4000"],
+  max_age: 86400,
+  methods: ["GET", "POST"]
+
 config :unboard_ql,
   ecto_repos: [UnboardQl.Repo]
 

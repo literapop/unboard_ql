@@ -32,6 +32,9 @@ defmodule UnboardQlWeb.Schema.Activity do
     end
     field :sponsored, :boolean
     field :link, :string
+    field :nouns, list_of(:string) do
+      resolve &Resolvers.nouns/3
+    end
   end
 
 end

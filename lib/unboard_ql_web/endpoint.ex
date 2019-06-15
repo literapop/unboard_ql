@@ -42,5 +42,7 @@ defmodule UnboardQlWeb.Endpoint do
     key: "_unboard_ql_key",
     signing_salt: "BxC0pwyC"
 
+  plug CORSPlug
+
   plug UnboardQlWeb.Router
 end

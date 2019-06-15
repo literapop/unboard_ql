@@ -23,6 +23,15 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, nil}
   end
 
+  def nouns(%{name: name}, _args, _resolution) do
+    {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.post("http://text-processing.com/api/tag/", "text=#{name}")
+    {:ok, %{"text" => text}} = Jason.decode(body)
+    nouns = Regex.run(~r/(\w+)\/NN/, text, capture: :all_but_first)
+    {:ok, nouns}
+  end
+  def nouns(_parent, _args, _resolution) do
+    {:ok, []}
+  end
 
   def image_url(%{image_url: image_url, name: name}, _args, _resolution) when image_url == nil do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get("https://api.giphy.com/v1/gifs/search?api_key=vykG20aQiE7C8eVLDbHZlXa33sBfE2Rp&q=#{URI.encode(name)}&limit=25&offset=0&rating=PG-13&lang=en")

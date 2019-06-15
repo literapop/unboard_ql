@@ -45,7 +45,8 @@ defmodule UnboardQl.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:absinthe, "1.4.16"},
       {:absinthe_plug, "1.4.7"},
-      {:httpoison, "0.9.1"}
+      {:httpoison, "0.9.1"},
+      {:cors_plug, "~> 2.0"}
     ]
   end
 
