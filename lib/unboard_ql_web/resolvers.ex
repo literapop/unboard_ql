@@ -41,19 +41,38 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, nil}
   end
 
-  def nouns(%{name: name}, _args, _resolution) do
+  def ads(%{name: name}, _args, _resolution) do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} =
       HTTPoison.post("http://text-processing.com/api/tag/", "text=#{name}")
 
     {:ok, %{"text" => text}} = Jason.decode(body)
 
-    case Regex.run(~r/(\w+)\/NN\b/, text, capture: :all_but_first) do
+    terms = case Regex.run(~r/(\w+)\/NN\b/, text, capture: :all_but_first) do
+      nil -> []
+      nouns -> Enum.map(nouns, &String.downcase/1)
+    end
+
+    case List.first(terms) do
       nil -> {:ok, []}
-      nouns -> {:ok, Enum.map(nouns, &String.downcase/1)}
+      term ->
+        {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get("https://api.bestbuy.com/v1/products(name=#{URI.encode(term)}*)?show=sku,name,salePrice,url,images&pageSize=5&page=1&apiKey=0b69b3VYXZqXmAoJFlvNbPKI&format=json", [], [ssl: [{:versions, [:'tlsv1.2']}]])
+        {:ok, %{"products" => products}} = Jason.decode(body)
+
+        product_list = Enum.map(products, fn %{ "name" => name, "salePrice" => sale_price, "url" => url, "images" => images } -> %{
+          name: name,
+          sale_price: sale_price,
+          url: url,
+          images: Enum.map(images, fn %{"href" => href} -> %{ href: href } end)
+        } end)
+
+        case product_list do
+          nil -> {:ok, []}
+          [] -> {:ok,nil}
+          ads -> {:ok, product_list}
+        end
     end
   end
-
-  def nouns(_parent, _args, _resolution) do
+  def ads(_parent, _args, _resolution) do
     {:ok, []}
   end
 

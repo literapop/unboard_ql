@@ -2,6 +2,17 @@ defmodule UnboardQlWeb.Schema.Activity do
   use Absinthe.Schema.Notation
   alias UnboardQlWeb.Resolvers
 
+  object :ad_image do
+    field :href, :string
+  end
+
+  object :ad do
+    field :name, :string
+    field :sale_price, :string
+    field :url, :string
+    field :images, list_of(:ad_image)
+  end
+
   object :activity do
     field :id, :id
     field :type, :activity_type do
@@ -31,8 +42,8 @@ defmodule UnboardQlWeb.Schema.Activity do
     end
     field :sponsored, :boolean
     field :link, :string
-    field :nouns, list_of(:string) do
-      resolve &Resolvers.nouns/3
+    field :ads, list_of(:ad) do
+      resolve &Resolvers.ads/3
     end
   end
 
