@@ -39,6 +39,9 @@ defmodule UnboardQlWeb.Schema.Activity do
     field :ads, list_of(:ad) do
       resolve &Resolvers.ads/3
     end
+    field :views, :integer do
+      resolve &Resolvers.impressions/3
+    end
   end
 
 end
