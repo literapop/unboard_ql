@@ -13,11 +13,23 @@ defmodule UnboardQlWeb.Schema.Activity do
     field :images, list_of(:ad_image)
   end
 
+  object :comment do
+    field :content, :string
+    field :user, :user do
+      resolve &Resolvers.user/3
+    end
+  end
+
   object :activity do
     field :id, :id
     field :type, :activity_type do
       resolve &Resolvers.type/3
     end
+
+    field :comments, list_of(:comment) do
+      resolve &Resolvers.activity_comments/3
+    end
+
     field :name, :string
     field :description, :string
     field :image_url, :string do

@@ -4,6 +4,15 @@ defmodule UnboardQlWeb.Resolvers do
   import Ecto.Changeset
   import Ecto.Query
 
+  def activity_comments(%{id: id}, _args, _resolution) do
+    activity =
+    Repo.get(Activity, id)
+    |> Repo.preload(:comments)
+    {:ok, activity.comments}
+  end
+  def activity_comments(parent, _args, _resolution) do
+    {:ok, []}
+  end
 
   def activity_participants(%{id: id}, _args, _resolution) do
     activity =
@@ -70,7 +79,7 @@ defmodule UnboardQlWeb.Resolvers do
 
         case product_list do
           [] -> {:ok,nil}
-          ads -> {:ok, product_list}
+          _ads -> {:ok, product_list}
         end
     end
   end
@@ -129,9 +138,9 @@ defmodule UnboardQlWeb.Resolvers do
   def user(%{creator_id: creator_id} = _parent, _args, _resolution) do
     {:ok, Repo.get(User, creator_id)}
   end
-
-
-
+  def user(%{user_id: user_id} = _parent, _args, _resolution) do
+    {:ok, Repo.get(User, user_id)}
+  end
 
   def like_activity(_parent, %{user_id: user_id, activity_id: activity_id}, _resolution) do
     user = Repo.get(User, user_id)
