@@ -68,8 +68,8 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Configure your database
 config :unboard_ql, UnboardQl.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "unboard_ql_dev",
+  database: "unboard_dev",
+  username: "unboard_dev",
+  password: "unboard_dev",
   hostname: "localhost",
   pool_size: 10

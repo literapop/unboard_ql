@@ -1,5 +1,15 @@
 # UnboardQl
 
+## Setup MySQL
+
+```
+mysql> create user unboard_dev@localhost identified by 'unboard_dev';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> grant all on unboard_dev.* to unboard_dev@localhost;
+Query OK, 0 rows affected (0.01 sec)
+```
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`

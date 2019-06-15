@@ -1,5 +1,7 @@
 defmodule UnboardQlWeb.Schema do
   use Absinthe.Schema
+  import_types UnboardQlWeb.Schema.Location
+  import_types UnboardQlWeb.Schema.User
   import_types UnboardQlWeb.Schema.Activity
 
   alias UnboardQlWeb.Resolvers

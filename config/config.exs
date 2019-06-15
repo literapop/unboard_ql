@@ -7,6 +7,12 @@
 # General application configuration
 use Mix.Config
 
+config :unboard_ql, UnboardQl.Repo,
+  database: "unboard_dev",
+  username: "unboard_dev",
+  password: "unboard_dev",
+  hostname: "localhost"
+
 config :unboard_ql,
   ecto_repos: [UnboardQl.Repo]
 
