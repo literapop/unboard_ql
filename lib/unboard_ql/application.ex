@@ -9,7 +9,7 @@ defmodule UnboardQl.Application do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      UnboardQl.Repo,
+      # UnboardQl.Repo,
       # Start the endpoint when the application starts
       UnboardQlWeb.Endpoint
       # Starts a worker by calling: UnboardQl.Worker.start_link(arg)

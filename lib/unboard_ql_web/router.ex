@@ -19,6 +19,16 @@ defmodule UnboardQlWeb.Router do
     get "/", PageController, :index
   end
 
+  scope "/api" do
+    pipe_through :api
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: UnboardQlWeb.Schema
+
+    forward "/", Absinthe.Plug,
+      schema: UnboardQlWeb.Schema
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", UnboardQlWeb do
   #   pipe_through :api
