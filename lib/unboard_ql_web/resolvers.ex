@@ -133,9 +133,9 @@ defmodule UnboardQlWeb.Resolvers do
   def user(%{creator_id: creator_id} = _parent, _args, _resolution) do
     {:ok, Repo.get(User, creator_id)}
   end
-
-
-
+  def user(%{user_id: user_id} = _parent, _args, _resolution) do
+    {:ok, Repo.get(User, user_id)}
+  end
 
   def like_activity(_parent, %{user_id: user_id, activity_id: activity_id}, _resolution) do
     user = Repo.get(User, user_id)
