@@ -50,18 +50,14 @@ defmodule UnboardQl.Repo.Migrations.AddInitTables do
       timestamps()
     end
 
-    create table("activity_paricipant") do
+    create table("activity_participant") do
       add :activity_id, :integer
       add :user_id, :integer
-
-      timestamps()
     end
 
     create table("activity_like") do
       add :activity_id, :integer
       add :user_id, :integer
-
-      timestamps()
     end
 
     create table("activity_comment") do

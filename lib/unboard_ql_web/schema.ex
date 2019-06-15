@@ -44,6 +44,24 @@ defmodule UnboardQlWeb.Schema do
 
       resolve &Resolvers.create_activity/3
     end
+
+    @desc "Create a user"
+    field :create_user, type: :user do
+      arg :email, non_null(:string)
+      arg :password, non_null(:string)
+      arg :first_name, :string
+      arg :last_name, :string
+
+      resolve &Resolvers.create_user/3
+    end
+
+    @desc "Register participant to activity"
+    field :register_participant, type: :activity do
+      arg :user_id, non_null(:integer)
+      arg :activity_id, non_null(:integer)
+
+      resolve &Resolvers.register_participant/3
+    end
   end
 
 end

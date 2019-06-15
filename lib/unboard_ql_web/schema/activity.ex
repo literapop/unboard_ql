@@ -17,9 +17,9 @@ defmodule UnboardQlWeb.Schema.Activity do
       resolve &Resolvers.image_url/3
     end
     field :participant_capacity, :integer
-    # field :registered_participants, list_of(:user) do
-    #   resolve &Resolvers.activity_participants/3
-    # end
+    field :registered_participants, list_of(:user) do
+      resolve &Resolvers.activity_participants/3
+    end
     field :price, :float
     field :accessibility, :float
     field :start_time, :integer
