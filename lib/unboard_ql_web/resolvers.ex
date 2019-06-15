@@ -163,6 +163,10 @@ defmodule UnboardQlWeb.Resolvers do
     end
   end
 
+  def list_types(_parent, _args, _resolution) do
+    {:ok, Repo.all(ActivityType)}
+  end
+
   def create_activity(_parent, args, _resolution) do
     Repo.insert(Map.merge(%Activity{}, args))
   end
