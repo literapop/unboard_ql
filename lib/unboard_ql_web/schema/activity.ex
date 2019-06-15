@@ -3,7 +3,9 @@ defmodule UnboardQlWeb.Schema.Activity do
   alias UnboardQlWeb.Resolvers
 
   object :ad do
-
+    field :sku, :string
+    field :name, :string
+    field :sale_price, :string
   end
 
   object :activity do
@@ -32,6 +34,9 @@ defmodule UnboardQlWeb.Schema.Activity do
     end
     field :sponsored, :boolean
     field :link, :string
+    field :ads, list_of(:ad) do
+      resolve &Resolvers.ads/3
+    end
     field :nouns, list_of(:string) do
       resolve &Resolvers.nouns/3
     end

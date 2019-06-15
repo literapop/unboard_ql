@@ -23,6 +23,36 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, nil}
   end
 
+  def ads(%{name: name}, _args, _resolution) do
+    namex = "cat"
+    #{:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get("https://api.bestbuy.com/v1/products(name=#{URI.encode(namex)}*)?show=sku,name,salePrice,url,mobileUrl,images&pageSize=5&page=1&apiKey=0b69b3VYXZqXmAoJFlvNbPKI&format=json")
+    {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get("https://api.bestbuy.com/v1/products(name=#{URI.encode(namex)}*)?show=sku,name,salePrice&pageSize=5&page=1&apiKey=0b69b3VYXZqXmAoJFlvNbPKI&format=json", [], [ssl: [{:versions, [:'tlsv1.2']}]])
+    {:ok, %{"products" => products}} = Jason.decode(body)
+    Logger.debug(inspect(products))
+
+    product_list = Enum.map(products, fn %{
+      "name" => name,
+      "salePrice" => sale_price,
+      "sku" => sku,
+      "url" => url
+      } -> %{
+      name: name,
+        sku: sku,
+        sale_price: sale_price,
+        url: url
+      }
+    end)
+
+    case product_list do
+      nil -> {:ok, []}
+      [] -> {:ok,nil}
+      ads -> {:ok, product_list}
+    end
+  end
+  def ads(_parent, _args, _resolution) do
+    {:ok, []}
+  end
+
   def nouns(%{name: name}, _args, _resolution) do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.post("http://text-processing.com/api/tag/", "text=#{name}")
     {:ok, %{"text" => text}} = Jason.decode(body)
