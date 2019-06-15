@@ -1,13 +1,21 @@
 defmodule UnboardQlWeb.Resolvers do
   require Logger
-  alias UnboardQl.{ActivityType, Activity, Location, Repo, User}
+  alias UnboardQl.{ActivityComment, ActivityType, Activity, Location, Repo, User}
   import Ecto.Changeset
   import Ecto.Query
 
+  def activity_comments(%{activity_id: id}, _args, _resolution) do
+    activity =
+    Repo.get(Activity, id)
+    |> Repo.preload(:comments)
+
+    {:ok, activity.comments}
+  end 
   def activity_comments(%{id: id}, _args, _resolution) do
     activity =
     Repo.get(Activity, id)
     |> Repo.preload(:comments)
+
     {:ok, activity.comments}
   end
   def activity_comments(parent, _args, _resolution) do
@@ -187,6 +195,22 @@ defmodule UnboardQlWeb.Resolvers do
 
       user ->
         {:ok, user}
+    end
+  end
+
+  def record_comment(_parent, %{user_id: user_id, activity_id: activity_id, content: content} = args, _resolution) do
+    user = Repo.get(User, user_id)
+    activity = Repo.get(Activity, activity_id)
+
+    cond do
+      is_nil(user) ->
+        {:error, "no such user"}
+
+      is_nil(activity) ->
+        {:error, "no such activity"}
+
+      true ->
+        Repo.insert(Map.merge(%ActivityComment{}, args))
     end
   end
 

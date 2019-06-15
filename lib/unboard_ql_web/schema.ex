@@ -6,6 +6,24 @@ defmodule UnboardQlWeb.Schema do
   import_types UnboardQlWeb.Schema.ActivityType
   import_types UnboardQlWeb.Schema.Activity
 
+  object :comment do
+    field :content, :string
+    field :user, :user do
+      resolve &Resolvers.user/3
+    end
+  end
+
+  object :ad_image do
+    field :href, :string
+  end
+
+  object :ad do
+    field :name, :string
+    field :sale_price, :string
+    field :url, :string
+    field :images, list_of(:ad_image)
+  end
+
   alias UnboardQlWeb.Resolvers
 
   query do
@@ -65,6 +83,16 @@ defmodule UnboardQlWeb.Schema do
 
       resolve &Resolvers.create_user/3
     end
+
+    @desc "Add an activity comment"
+    field :activity_comment, type: :activity do
+      arg :user_id, non_null(:integer)
+      arg :activity_id, non_null(:integer)
+      arg :content, non_null(:string)
+
+      resolve &Resolvers.record_comment/3
+    end
+
 
     @desc "Register participant to activity"
     field :register_participant, type: :activity do
