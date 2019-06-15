@@ -136,7 +136,7 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, nil}
   end
 
-  def location(%{location_id: location_id} = _parent, _args, _resolution) do
+  def location(%{location_id: location_id} = _parent, _args, _resolution) when location_id != nil do
     {:ok, Repo.get(Location, location_id)}
   end
   def location(_parent, _args, _resolution) do
