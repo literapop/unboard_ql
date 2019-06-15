@@ -1,7 +1,9 @@
 defmodule UnboardQlWeb.Schema do
   use Absinthe.Schema
-  import_types UnboardQlWeb.Schema.Location
+
   import_types UnboardQlWeb.Schema.User
+  import_types UnboardQlWeb.Schema.Location
+  import_types UnboardQlWeb.Schema.ActivityType
   import_types UnboardQlWeb.Schema.Activity
 
   alias UnboardQlWeb.Resolvers
@@ -11,6 +13,27 @@ defmodule UnboardQlWeb.Schema do
     field :activities, list_of(:activity) do
       arg :sponsored, :boolean
       resolve &Resolvers.list_activities/3
+    end
+  end
+
+  mutation do
+    @desc "Create an activity"
+    field :create_activity, type: :activity do
+      arg :type_id, non_null(:integer)
+      arg :name, non_null(:string)
+      arg :description, non_null(:string)
+      arg :image_url, :string
+      arg :participant_capacity, non_null(:integer)
+      arg :price, non_null(:float)
+      arg :accessibility, non_null(:float)
+      arg :start_time, non_null(:integer)
+      arg :end_time, non_null(:integer)
+      arg :creator_id, non_null(:integer)
+      arg :location_id, non_null(:integer)
+      arg :sponsored, :boolean
+      arg :link, :string
+
+      resolve &Resolvers.create_activity/3
     end
   end
 

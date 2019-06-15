@@ -4,16 +4,20 @@ defmodule UnboardQlWeb.Schema.Activity do
 
   object :activity do
     field :id, :id
-    field :type, :string
+    field :type, :activity_type do
+      resolve &Resolvers.type/3
+    end
+    field :name, :string
     field :description, :string
     field :image_url, :string
     field :participant_capacity, :integer
-    field :registered_participants, :integer
+    # field :registered_participants, list_of(:user) do
+    #   resolve &Resolvers.activity_participants/3
+    # end
     field :price, :float
     field :accessibility, :float
     field :start_time, :integer
     field :end_time, :integer
-    field :location_id, :integer
     field :creator, :user do
       resolve &Resolvers.user/3
     end
