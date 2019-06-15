@@ -2,10 +2,15 @@ defmodule UnboardQlWeb.Schema.Activity do
   use Absinthe.Schema.Notation
   alias UnboardQlWeb.Resolvers
 
+  object :ad_image do
+    field :href, :string
+  end
+
   object :ad do
-    field :sku, :string
     field :name, :string
     field :sale_price, :string
+    field :url, :string
+    field :images, list_of(:ad_image)
   end
 
   object :activity do
