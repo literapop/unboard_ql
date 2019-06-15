@@ -14,6 +14,15 @@ defmodule UnboardQlWeb.Schema do
       arg :sponsored, :boolean
       resolve &Resolvers.list_activities/3
     end
+
+    @desc "Get an activity suggestion"
+    field :suggestion, :activity do
+      arg :participants, :integer
+      arg :accessibility, :float
+      arg :price, :float
+      arg :type, :string
+      resolve &Resolvers.suggestion/3
+    end
   end
 
   mutation do
