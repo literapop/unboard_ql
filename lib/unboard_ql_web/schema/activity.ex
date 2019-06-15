@@ -2,6 +2,10 @@ defmodule UnboardQlWeb.Schema.Activity do
   use Absinthe.Schema.Notation
   alias UnboardQlWeb.Resolvers
 
+  object :ad do
+
+  end
+
   object :activity do
     field :id, :id
     field :type, :activity_type do
@@ -9,7 +13,9 @@ defmodule UnboardQlWeb.Schema.Activity do
     end
     field :name, :string
     field :description, :string
-    field :image_url, :string
+    field :image_url, :string do
+      resolve &Resolvers.image_url/3
+    end
     field :participant_capacity, :integer
     # field :registered_participants, list_of(:user) do
     #   resolve &Resolvers.activity_participants/3

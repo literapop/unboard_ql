@@ -19,8 +19,25 @@ defmodule UnboardQlWeb.Resolvers do
         {:ok, type}
     end
   end
-
   def type(_parent, _args, _resolution) do
+    {:ok, nil}
+  end
+
+
+  def image_url(%{image_url: image_url, name: name}, _args, _resolution) when image_url == nil do
+    {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get("https://api.giphy.com/v1/gifs/search?api_key=vykG20aQiE7C8eVLDbHZlXa33sBfE2Rp&q=#{URI.encode(name)}&limit=25&offset=0&rating=PG-13&lang=en")
+    {:ok, %{"data" => items}} = Jason.decode(body)
+
+    Logger.debug(inspect(items))
+    case Enum.random(items) do
+      nil ->
+        {:ok, nil}
+      item ->
+        {:ok, get_in(item, ["images", "fixed_width", "url"])}
+    end
+  end
+  def image_url(parent, _args, _resolution) do
+    Logger.debug(inspect(parent))
     {:ok, nil}
   end
 
@@ -58,7 +75,8 @@ defmodule UnboardQlWeb.Resolvers do
            price: price,
            type: type,
            participant_capacity: participant_capacity,
-           name: name
+           name: name,
+           image_url: nil
          }}
     end
   end
