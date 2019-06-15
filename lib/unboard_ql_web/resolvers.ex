@@ -10,7 +10,7 @@ defmodule UnboardQlWeb.Resolvers do
     |> Repo.preload(:comments)
 
     {:ok, activity.comments}
-  end 
+  end
   def activity_comments(%{id: id}, _args, _resolution) do
     activity =
     Repo.get(Activity, id)
@@ -135,8 +135,11 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, nil}
   end
 
-  def location(%{location_id: location_id} = _parent, _args, _resolution) do
+  def location(%{location_id: location_id} = _parent, _args, _resolution) when location_id != nil do
     {:ok, Repo.get(Location, location_id)}
+  end
+  def location(_parent, _args, _resolution) do
+    {:ok, nil}
   end
 
   def user(_parent, %{email: email}, _resolution) do
@@ -168,6 +171,10 @@ defmodule UnboardQlWeb.Resolvers do
         |> put_assoc(:likes, [user|activity.likes])
         |> Repo.update()
     end
+  end
+
+  def list_types(_parent, _args, _resolution) do
+    {:ok, Repo.all(ActivityType)}
   end
 
   def create_activity(_parent, args, _resolution) do

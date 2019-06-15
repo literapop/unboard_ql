@@ -47,6 +47,11 @@ defmodule UnboardQlWeb.Schema do
       arg :email, :string
       resolve &Resolvers.user/3
     end
+
+    @desc "Get a list of types"
+    field :types, list_of(:activity_type) do
+      resolve &Resolvers.list_types/3
+    end
   end
 
   mutation do
@@ -112,6 +117,7 @@ defmodule UnboardQlWeb.Schema do
 
       resolve &Resolvers.record_impression/3
     end
+
   end
 
 end
