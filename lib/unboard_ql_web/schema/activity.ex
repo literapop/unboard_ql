@@ -5,6 +5,7 @@ defmodule UnboardQlWeb.Schema.Activity do
   object :activity do
     field :id, :id
     field :type, :string
+    field :name, :string
     field :description, :string
     field :image_url, :string
     field :participant_capacity, :integer
