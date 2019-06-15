@@ -1,5 +1,9 @@
 # UnboardQl
 
+## Production Site
+
+The api is available at https://www.unboard.today/api/graphiql
+
 ## Setup dev dependency services
 
 ### Erlang and Elixir
@@ -21,11 +25,11 @@ Install the erlang and elixir versions required by the project
 asdf install
 ```
 
-## Setup NodeJs
+### Setup NodeJs
 
 brew install node
 
-## Setup MySQL
+### Setup MySQL
 
 ```
 mysql> create user unboard_dev@localhost identified by 'unboard_dev';
@@ -37,6 +41,8 @@ Query OK, 1 row affected (0.00 sec)
 mysql> grant all on unboard_dev.* to unboard_dev@localhost;
 Query OK, 0 rows affected (0.01 sec)
 ```
+
+## Running the application locally
 
 To start your Phoenix server:
 
