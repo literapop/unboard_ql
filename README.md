@@ -21,6 +21,10 @@ Install the erlang and elixir versions required by the project
 asdf install
 ```
 
+## Setup NodeJs
+
+brew install node
+
 ## Setup MySQL
 
 ```
