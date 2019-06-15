@@ -283,4 +283,17 @@ defmodule UnboardQlWeb.Resolvers do
          }}
     end
   end
+
+  def delete_activity(_parent, %{activity_id: activity_id, user_id: user_id}, _resolution) do
+    case Repo.get(Activity, activity_id) do
+      nil ->
+        {:error, "no such activity"}
+      activity ->
+        if activity.creator_id == user_id do
+          Repo.delete(activity)
+        else
+          {:error, "this is not your activity to delete"}
+        end
+    end
+  end
 end

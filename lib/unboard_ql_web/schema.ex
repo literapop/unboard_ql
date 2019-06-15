@@ -118,6 +118,13 @@ defmodule UnboardQlWeb.Schema do
       resolve &Resolvers.record_impression/3
     end
 
+    @desc "Delete an activity"
+    field :delete_activity, type: :activity do
+      arg :user_id, non_null(:integer)
+      arg :activity_id, non_null(:integer)
+
+      resolve &Resolvers.delete_activity/3
+    end
   end
 
 end
