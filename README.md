@@ -34,16 +34,6 @@ mysql> grant all on unboard_dev.* to unboard_dev@localhost;
 Query OK, 0 rows affected (0.01 sec)
 ```
 
-### Set AWS Creds
-
-Even though we don't connect to actual AWS services in dev, you still need to have credential environment variables set so the AWS client doesn't get confused.
-
-```bash
-export AWS_ACCESS_KEY_ID=12345
-export AWS_SECRET_ACCESS_KEY=12345
-```
-
-
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
