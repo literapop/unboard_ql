@@ -41,10 +41,10 @@ defmodule UnboardQlWeb.Schema do
       arg :participant_capacity, non_null(:integer)
       arg :price, non_null(:float)
       arg :accessibility, non_null(:float)
-      arg :start_time, non_null(:integer)
-      arg :end_time, non_null(:integer)
+      arg :start_time, :integer
+      arg :end_time, :integer
       arg :creator_id, non_null(:integer)
-      arg :location_id, non_null(:integer)
+      arg :location_id, :integer
       arg :sponsored, :boolean
       arg :link, :string
 
