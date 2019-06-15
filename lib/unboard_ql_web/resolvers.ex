@@ -18,7 +18,7 @@ defmodule UnboardQlWeb.Resolvers do
 
     {:ok, activity.comments}
   end
-  def activity_comments(parent, _args, _resolution) do
+  def activity_comments(_parent, _args, _resolution) do
     {:ok, []}
   end
 
@@ -34,6 +34,12 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, []}
   end
 
+  def list_activities(_parent, %{creator_id: creator_id}, _resolution) do
+    q = from(a in Activity,
+      where: a.creator_id == ^creator_id,
+      select: a)
+    {:ok, Repo.all(q)}
+  end
   def list_activities(_parent, _args, _resolution) do
     # {:ok, UnboardQl.Activities.list_posts()}
     {:ok, Repo.all(Activity)}

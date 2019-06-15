@@ -30,6 +30,7 @@ defmodule UnboardQlWeb.Schema do
     @desc "Get all activities"
     field :activities, list_of(:activity) do
       arg :sponsored, :boolean
+      arg :creator_id, :integer
       resolve &Resolvers.list_activities/3
     end
 
