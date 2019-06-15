@@ -26,8 +26,10 @@ defmodule UnboardQlWeb.Resolvers do
   def nouns(%{name: name}, _args, _resolution) do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.post("http://text-processing.com/api/tag/", "text=#{name}")
     {:ok, %{"text" => text}} = Jason.decode(body)
-    nouns = Regex.run(~r/(\w+)\/NN/, text, capture: :all_but_first)
-    {:ok, nouns}
+    case Regex.run(~r/(\w+)\/NN\b/, text, capture: :all_but_first) do
+      nil -> {:ok, []}
+      nouns -> {:ok, Enum.map(nouns, &String.downcase/1)}
+    end
   end
   def nouns(_parent, _args, _resolution) do
     {:ok, []}
@@ -38,11 +40,11 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, %{"data" => items}} = Jason.decode(body)
 
     Logger.debug(inspect(items))
-    case Enum.random(items) do
-      nil ->
-        {:ok, nil}
-      item ->
-        {:ok, get_in(item, ["images", "fixed_width", "url"])}
+    case items do
+      nil -> {:ok, nil}
+      [] -> {:ok, nil}
+      items ->
+        {:ok, get_in(Enum.random(items), ["images", "fixed_width", "url"])}
     end
   end
   def image_url(parent, _args, _resolution) do
