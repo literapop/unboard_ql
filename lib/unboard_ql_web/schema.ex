@@ -23,6 +23,12 @@ defmodule UnboardQlWeb.Schema do
       arg :type, :string
       resolve &Resolvers.suggestion/3
     end
+
+    @desc "Get a user"
+    field :user, :user do
+      arg :email, :string
+      resolve &Resolvers.user/3
+    end
   end
 
   mutation do

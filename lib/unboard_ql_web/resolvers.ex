@@ -118,6 +118,9 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, Repo.get(Location, location_id)}
   end
 
+  def user(_parent, %{email: email}, _resolution) do
+    {:ok, Repo.get_by(User, email: email)}
+  end
   def user(%{creator_id: creator_id} = _parent, _args, _resolution) do
     {:ok, Repo.get(User, creator_id)}
   end
