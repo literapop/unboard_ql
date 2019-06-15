@@ -42,9 +42,6 @@ defmodule UnboardQlWeb.Schema.Activity do
     field :ads, list_of(:ad) do
       resolve &Resolvers.ads/3
     end
-    field :nouns, list_of(:string) do
-      resolve &Resolvers.nouns/3
-    end
   end
 
 end
