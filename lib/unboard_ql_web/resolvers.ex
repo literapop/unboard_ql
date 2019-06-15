@@ -2,6 +2,8 @@ defmodule UnboardQlWeb.Resolvers do
   require Logger
   alias UnboardQl.{ActivityType, Activity, Location, Repo, User}
   import Ecto.Changeset
+  import Ecto.Query
+
 
   def activity_participants(%{id: id}, _args, _resolution) do
     activity =
@@ -53,6 +55,12 @@ defmodule UnboardQlWeb.Resolvers do
 
   def nouns(_parent, _args, _resolution) do
     {:ok, []}
+  end
+
+  def likes(%{id: id}, _args, _resolution) do
+    query = from(al in "activity_like",
+      where: al.activity_id == ^id)
+    {:ok, Repo.aggregate(query, :count, :id)}
   end
 
   def image_url(%{image_url: image_url, name: name}, _args, _resolution) when image_url == nil do

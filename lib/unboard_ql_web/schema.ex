@@ -62,6 +62,12 @@ defmodule UnboardQlWeb.Schema do
 
       resolve &Resolvers.register_participant/3
     end
+
+    @desc "Like an activity"
+    field :like_activity, type: :activity do
+      arg :user_id, non_null(:integer)
+      arg :activity_id, non_null(:integer)
+    end
   end
 
 end
