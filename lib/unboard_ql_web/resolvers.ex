@@ -39,7 +39,7 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, nil}
   end
 
-  def ads(%{name: name}, _args, _resolution) do    
+  def ads(%{name: name}, _args, _resolution) do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} =
       HTTPoison.post("http://text-processing.com/api/tag/", "text=#{name}")
 
@@ -55,21 +55,20 @@ defmodule UnboardQlWeb.Resolvers do
       term ->
         {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get("https://api.bestbuy.com/v1/products(name=#{URI.encode(term)}*)?show=sku,name,salePrice,url,images&pageSize=5&page=1&apiKey=0b69b3VYXZqXmAoJFlvNbPKI&format=json", [], [ssl: [{:versions, [:'tlsv1.2']}]])
         {:ok, %{"products" => products}} = Jason.decode(body)
-    
+
         product_list = Enum.map(products, fn %{ "name" => name, "salePrice" => sale_price, "url" => url, "images" => images } -> %{
           name: name,
           sale_price: sale_price,
           url: url,
           images: Enum.map(images, fn %{"href" => href} -> %{ href: href } end)
         } end)
-    
+
         case product_list do
           nil -> {:ok, []}
           [] -> {:ok,nil}
           ads -> {:ok, product_list}
         end
     end
-    
   end
   def ads(_parent, _args, _resolution) do
     {:ok, []}
