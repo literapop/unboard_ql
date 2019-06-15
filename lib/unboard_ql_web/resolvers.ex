@@ -22,7 +22,10 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, Repo.all(Activity)}
   end
 
-  @spec type(any, any, any) :: any
+  def type(%{type_id: type_id} = _parent, _args, _resolution) when type_id == nil do
+    {:ok, nil}
+  end
+
   def type(%{type_id: type_id} = _parent, _args, _resolution) do
     {:ok, Repo.get(ActivityType, type_id)}
   end
