@@ -69,7 +69,6 @@ defmodule UnboardQlWeb.Resolvers do
         } end)
 
         case product_list do
-          nil -> {:ok, []}
           [] -> {:ok,nil}
           ads -> {:ok, product_list}
         end
@@ -82,6 +81,12 @@ defmodule UnboardQlWeb.Resolvers do
   def likes(%{id: id}, _args, _resolution) do
     query = from(al in "activity_like",
       where: al.activity_id == ^id)
+    {:ok, Repo.aggregate(query, :count, :id)}
+  end
+
+  def impressions(%{id: id}, _args, _resolution) do
+    query = from(i in "activity_impression",
+      where: i.activity_id == ^id)
     {:ok, Repo.aggregate(query, :count, :id)}
   end
 
@@ -169,6 +174,26 @@ defmodule UnboardQlWeb.Resolvers do
 
       user ->
         {:ok, user}
+    end
+  end
+
+  def record_impression(_parent, %{user_id: user_id, activity_id: activity_id}, _resolution) do
+    user = Repo.get(User, user_id)
+    activity = Repo.get(Activity, activity_id)
+
+    cond do
+      is_nil(user) ->
+        {:error, "no such user"}
+
+      is_nil(activity) ->
+        {:error, "no such activity"}
+
+      true ->
+        {:ok, _} = activity
+        |> Ecto.build_assoc(:impressions, user_id: user.id)
+        |> Repo.insert()
+
+        {:ok, Repo.get(Activity, activity.id)}
     end
   end
 

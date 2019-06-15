@@ -76,6 +76,14 @@ defmodule UnboardQlWeb.Schema do
 
       resolve &Resolvers.like_activity/3
     end
+
+    @desc "Record an impression"
+    field :record_impression, type: :activity do
+      arg :user_id, non_null(:integer)
+      arg :activity_id, non_null(:integer)
+
+      resolve &Resolvers.record_impression/3
+    end
   end
 
 end
