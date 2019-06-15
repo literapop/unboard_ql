@@ -73,6 +73,8 @@ defmodule UnboardQlWeb.Schema do
     field :like_activity, type: :activity do
       arg :user_id, non_null(:integer)
       arg :activity_id, non_null(:integer)
+
+      resolve &Resolvers.like_activity/3
     end
   end
 

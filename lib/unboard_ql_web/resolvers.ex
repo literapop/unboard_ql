@@ -125,6 +125,30 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, Repo.get(User, creator_id)}
   end
 
+
+
+
+  def like_activity(_parent, %{user_id: user_id, activity_id: activity_id}, _resolution) do
+    user = Repo.get(User, user_id)
+    activity = Repo.get(Activity, activity_id)
+
+    cond do
+      is_nil(user) ->
+        {:error, "no such user"}
+
+      is_nil(activity) ->
+        {:error, "no such activity"}
+
+      true ->
+        activity = Repo.preload(activity, :likes)
+
+        activity
+        |> change()
+        |> put_assoc(:likes, [user|activity.likes])
+        |> Repo.update()
+    end
+  end
+
   def create_activity(_parent, args, _resolution) do
     Repo.insert(Map.merge(%Activity{}, args))
   end
