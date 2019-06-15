@@ -117,7 +117,7 @@ defmodule UnboardQlWeb.Resolvers do
 
     {:ok, %{"data" => items}} = Jason.decode(body)
 
-    Logger.debug(inspect(items))
+    # Logger.debug(inspect(items))
 
     case items do
       nil ->
@@ -132,7 +132,6 @@ defmodule UnboardQlWeb.Resolvers do
   end
 
   def image_url(parent, _args, _resolution) do
-    Logger.debug(inspect(parent))
     {:ok, nil}
   end
 
@@ -253,7 +252,7 @@ defmodule UnboardQlWeb.Resolvers do
   def suggestion(_parent, args, _resolution) do
     {:ok, response} = HTTPoison.get("https://www.boredapi.com/api/activity", [], params: args)
     {:ok, decoded} = Jason.decode(response.body)
-    Logger.debug(inspect(decoded))
+    # Logger.debug(inspect(decoded))
 
     case decoded do
       %{"error" => error} ->
