@@ -44,7 +44,7 @@ defmodule UnboardQlWeb.Resolvers do
       nil -> {:ok, nil}
       [] -> {:ok, nil}
       items ->
-        {:ok, get_in(Enum.random(items), ["images", "fixed_width", "url"])}
+        {:ok, get_in(Enum.random(items), ["images", "original", "url"])}
     end
   end
   def image_url(parent, _args, _resolution) do
