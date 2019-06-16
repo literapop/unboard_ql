@@ -46,6 +46,7 @@ defmodule UnboardQlWeb.Schema do
     @desc "Get a user"
     field :user, :user do
       arg :email, :string
+      arg :id, :integer
       resolve &Resolvers.user/3
     end
 
