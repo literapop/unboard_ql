@@ -2,6 +2,7 @@ defmodule UnboardQl.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
+  import Supervisor.Spec
 
   use Application
 
@@ -11,9 +12,12 @@ defmodule UnboardQl.Application do
       # Start the Ecto repository
       UnboardQl.Repo,
       # Start the endpoint when the application starts
-      UnboardQlWeb.Endpoint
+      UnboardQlWeb.Endpoint,
       # Starts a worker by calling: UnboardQl.Worker.start_link(arg)
       # {UnboardQl.Worker, arg},
+      worker(ConCache, [[name: :giphy_cache, global_ttl: :timer.minutes(15), ttl_check_interval: :timer.seconds(30)]], [id: :giphy_cache]),
+      worker(ConCache, [[name: :bbuy_cache, global_ttl: :timer.minutes(30), ttl_check_interval: :timer.seconds(30)]], [id: :bbuy_cache]),
+      worker(ConCache, [[name: :txt_cache, global_ttl: :timer.minutes(15), ttl_check_interval: :timer.seconds(30)]], [id: :txt_cache])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
