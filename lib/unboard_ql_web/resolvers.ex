@@ -34,13 +34,30 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, []}
   end
 
+  def list_participting_activities(%{id: user_id}, _args, _resolutio) do
+    q = from(a in Activity,
+    join: ap in "activity_participant", on: a.id == ap.activity_id,
+    join: u in User, on: u.id == ap.user_id,
+    where: u.id == ^user_id,
+    select: a)
+    {:ok, Repo.all(q)}
+  end
+
+  def list_activities(%{id: user_id}, _args, _resolution) do
+    q = from(a in Activity,
+      where: a.creator_id == ^user_id,
+      select: a)
+    {:ok, Repo.all(q)}
+  end
+
   def list_activities(_parent, %{creator_id: creator_id}, _resolution) do
     q = from(a in Activity,
       where: a.creator_id == ^creator_id,
       select: a)
     {:ok, Repo.all(q)}
   end
-  def list_activities(_parent, _args, _resolution) do
+  def list_activities(parent, _args, _resolution) do
+    Logger.debug(inspect(parent))
     # {:ok, UnboardQl.Activities.list_posts()}
     {:ok, Repo.all(Activity)}
   end
@@ -149,7 +166,8 @@ defmodule UnboardQlWeb.Resolvers do
   end
 
   def user(_parent, %{email: email}, _resolution) do
-    {:ok, Repo.get_by(User, email: email)}
+    user = Repo.get_by(User, email: email)
+    {:ok, user}
   end
   def user(%{creator_id: creator_id} = _parent, _args, _resolution) do
     {:ok, Repo.get(User, creator_id)}
