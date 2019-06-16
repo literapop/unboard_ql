@@ -92,8 +92,7 @@ defmodule UnboardQlWeb.Resolvers do
         {:ok, []}
 
       term ->
-        {:ok, %HTTPoison.Response{body: body, status_code: 200}} =
-          ConCache.get_or_store(:bbuy_cache, term, fn ->
+        result = ConCache.get_or_store(:bbuy_cache, term, fn ->
             HTTPoison.get(
               "https://api.bestbuy.com/v1/products(name=#{URI.encode(term)}*)?show=sku,name,salePrice,url,images&pageSize=5&page=1&apiKey=0b69b3VYXZqXmAoJFlvNbPKI&format=json",
               [],
@@ -101,26 +100,32 @@ defmodule UnboardQlWeb.Resolvers do
             )
           end)
 
-        {:ok, %{"products" => products}} = Jason.decode(body)
+        case result do
+          {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
+            {:ok, %{"products" => products}} = Jason.decode(body)
 
-        product_list =
-          Enum.map(products, fn %{
-                                  "name" => name,
-                                  "salePrice" => sale_price,
-                                  "url" => url,
-                                  "images" => images
-                                } ->
-            %{
-              name: name,
-              sale_price: sale_price,
-              url: url,
-              images: Enum.map(images, fn %{"href" => href} -> %{href: href} end)
-            }
-          end)
+            product_list =
+              Enum.map(products, fn %{
+                                      "name" => name,
+                                      "salePrice" => sale_price,
+                                      "url" => url,
+                                      "images" => images
+                                    } ->
+                %{
+                  name: name,
+                  sale_price: sale_price,
+                  url: url,
+                  images: Enum.map(images, fn %{"href" => href} -> %{href: href} end)
+                }
+              end)
 
-        case product_list do
-          [] -> {:ok, nil}
-          _ads -> {:ok, product_list}
+            case product_list do
+              [] -> {:ok, nil}
+              _ads -> {:ok, product_list}
+            end
+          _error ->
+            ConCache.delete(:bbuy_cache, term)
+            {:error, "error fetching ads"}
         end
     end
   end
