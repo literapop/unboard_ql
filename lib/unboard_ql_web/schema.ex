@@ -60,7 +60,8 @@ defmodule UnboardQlWeb.Schema do
   mutation do
     @desc "Create an activity"
     field :create_activity, type: :activity do
-      arg :type_id, non_null(:integer)
+      arg :type_id, :integer
+      arg :type, :string
       arg :name, non_null(:string)
       arg :description, non_null(:string)
       arg :image_url, :string

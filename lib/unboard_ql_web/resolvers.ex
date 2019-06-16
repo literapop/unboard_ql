@@ -266,6 +266,21 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, Repo.all(ActivityType)}
   end
 
+  def create_activity(_parent, args = %{type: name}, _resolution) do
+    Logger.debug(inspect(args))
+    type = case Repo.get_by(ActivityType, name: name) do
+      nil ->
+        {:ok, type} = Repo.insert(%ActivityType{name: name})
+        type
+      type -> type
+    end
+    %Activity{}
+    |> Map.merge(args)
+    |> Map.delete(:type)
+    |> Map.merge(%{type_id: type.id})
+    |> Repo.insert()
+  end
+
   def create_activity(_parent, args, _resolution) do
     Repo.insert(Map.merge(%Activity{}, args))
   end
