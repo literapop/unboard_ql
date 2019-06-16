@@ -6,18 +6,20 @@ defmodule UnboardQlWeb.Resolvers do
 
   def activity_comments(%{activity_id: id}, _args, _resolution) do
     activity =
-    Repo.get(Activity, id)
-    |> Repo.preload(:comments)
+      Repo.get(Activity, id)
+      |> Repo.preload(:comments)
 
     {:ok, activity.comments}
   end
+
   def activity_comments(%{id: id}, _args, _resolution) do
     activity =
-    Repo.get(Activity, id)
-    |> Repo.preload(:comments)
+      Repo.get(Activity, id)
+      |> Repo.preload(:comments)
 
     {:ok, activity.comments}
   end
+
   def activity_comments(_parent, _args, _resolution) do
     {:ok, []}
   end
@@ -35,11 +37,15 @@ defmodule UnboardQlWeb.Resolvers do
   end
 
   def list_activities(_parent, %{creator_id: creator_id}, _resolution) do
-    q = from(a in Activity,
-      where: a.creator_id == ^creator_id,
-      select: a)
+    q =
+      from(a in Activity,
+        where: a.creator_id == ^creator_id,
+        select: a
+      )
+
     {:ok, Repo.all(q)}
   end
+
   def list_activities(_parent, _args, _resolution) do
     # {:ok, UnboardQl.Activities.list_posts()}
     {:ok, Repo.all(Activity)}
@@ -69,57 +75,87 @@ defmodule UnboardQlWeb.Resolvers do
 
   def ads(%{name: name}, _args, _resolution) do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} =
-      HTTPoison.post("http://text-processing.com/api/tag/", "text=#{name}")
+      ConCache.get_or_store(:txt_cache, name, fn ->
+        HTTPoison.post("http://text-processing.com/api/tag/", "text=#{name}")
+      end)
 
     {:ok, %{"text" => text}} = Jason.decode(body)
 
-    terms = case Regex.run(~r/(\w+)\/NN\b/, text, capture: :all_but_first) do
-      nil -> []
-      nouns -> Enum.map(nouns, &String.downcase/1)
-    end
+    terms =
+      case Regex.run(~r/(\w+)\/NN\b/, text, capture: :all_but_first) do
+        nil -> []
+        nouns -> Enum.map(nouns, &String.downcase/1)
+      end
 
     case List.first(terms) do
-      nil -> {:ok, []}
+      nil ->
+        {:ok, []}
+
       term ->
-        {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get("https://api.bestbuy.com/v1/products(name=#{URI.encode(term)}*)?show=sku,name,salePrice,url,images&pageSize=5&page=1&apiKey=0b69b3VYXZqXmAoJFlvNbPKI&format=json", [], [ssl: [{:versions, [:'tlsv1.2']}]])
+        {:ok, %HTTPoison.Response{body: body, status_code: 200}} =
+          ConCache.get_or_store(:bbuy_cache, term, fn ->
+            HTTPoison.get(
+              "https://api.bestbuy.com/v1/products(name=#{URI.encode(term)}*)?show=sku,name,salePrice,url,images&pageSize=5&page=1&apiKey=0b69b3VYXZqXmAoJFlvNbPKI&format=json",
+              [],
+              ssl: [{:versions, [:"tlsv1.2"]}]
+            )
+          end)
+
         {:ok, %{"products" => products}} = Jason.decode(body)
 
-        product_list = Enum.map(products, fn %{ "name" => name, "salePrice" => sale_price, "url" => url, "images" => images } -> %{
-          name: name,
-          sale_price: sale_price,
-          url: url,
-          images: Enum.map(images, fn %{"href" => href} -> %{ href: href } end)
-        } end)
+        product_list =
+          Enum.map(products, fn %{
+                                  "name" => name,
+                                  "salePrice" => sale_price,
+                                  "url" => url,
+                                  "images" => images
+                                } ->
+            %{
+              name: name,
+              sale_price: sale_price,
+              url: url,
+              images: Enum.map(images, fn %{"href" => href} -> %{href: href} end)
+            }
+          end)
 
         case product_list do
-          [] -> {:ok,nil}
+          [] -> {:ok, nil}
           _ads -> {:ok, product_list}
         end
     end
   end
+
   def ads(_parent, _args, _resolution) do
     {:ok, []}
   end
 
   def likes(%{id: id}, _args, _resolution) do
-    query = from(al in "activity_like",
-      where: al.activity_id == ^id)
+    query =
+      from(al in "activity_like",
+        where: al.activity_id == ^id
+      )
+
     {:ok, Repo.aggregate(query, :count, :id)}
   end
 
   def impressions(%{id: id}, _args, _resolution) do
-    query = from(i in "activity_impression",
-      where: i.activity_id == ^id)
+    query =
+      from(i in "activity_impression",
+        where: i.activity_id == ^id
+      )
+
     {:ok, Repo.aggregate(query, :count, :id)}
   end
 
   def image_url(%{image_url: image_url, name: name}, _args, _resolution) when image_url == nil do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} =
-      HTTPoison.get(
-        "https://api.giphy.com/v1/gifs/search?api_key=vykG20aQiE7C8eVLDbHZlXa33sBfE2Rp&q=#{
-          URI.encode(name)
-        }&limit=25&offset=0&rating=PG-13&lang=en"
-      )
+      ConCache.get_or_store(:giphy_cache, name, fn ->
+        HTTPoison.get(
+          "https://api.giphy.com/v1/gifs/search?api_key=vykG20aQiE7C8eVLDbHZlXa33sBfE2Rp&q=#{
+            URI.encode(name)
+          }&limit=25&offset=0&rating=PG-13&lang=en"
+        )
+      end)
 
     {:ok, %{"data" => items}} = Jason.decode(body)
 
@@ -137,13 +173,15 @@ defmodule UnboardQlWeb.Resolvers do
     end
   end
 
-  def image_url(parent, _args, _resolution) do
+  def image_url(_parent, _args, _resolution) do
     {:ok, nil}
   end
 
-  def location(%{location_id: location_id} = _parent, _args, _resolution) when location_id != nil do
+  def location(%{location_id: location_id} = _parent, _args, _resolution)
+      when location_id != nil do
     {:ok, Repo.get(Location, location_id)}
   end
+
   def location(_parent, _args, _resolution) do
     {:ok, nil}
   end
@@ -151,9 +189,11 @@ defmodule UnboardQlWeb.Resolvers do
   def user(_parent, %{email: email}, _resolution) do
     {:ok, Repo.get_by(User, email: email)}
   end
+
   def user(%{creator_id: creator_id} = _parent, _args, _resolution) do
     {:ok, Repo.get(User, creator_id)}
   end
+
   def user(%{user_id: user_id} = _parent, _args, _resolution) do
     {:ok, Repo.get(User, user_id)}
   end
@@ -174,7 +214,7 @@ defmodule UnboardQlWeb.Resolvers do
 
         activity
         |> change()
-        |> put_assoc(:likes, [user|activity.likes])
+        |> put_assoc(:likes, [user | activity.likes])
         |> Repo.update()
     end
   end
@@ -206,7 +246,11 @@ defmodule UnboardQlWeb.Resolvers do
     end
   end
 
-  def record_comment(_parent, %{user_id: user_id, activity_id: activity_id, content: content} = args, _resolution) do
+  def record_comment(
+        _parent,
+        %{user_id: user_id, activity_id: activity_id, content: _content} = args,
+        _resolution
+      ) do
     user = Repo.get(User, user_id)
     activity = Repo.get(Activity, activity_id)
 
@@ -234,9 +278,10 @@ defmodule UnboardQlWeb.Resolvers do
         {:error, "no such activity"}
 
       true ->
-        {:ok, _} = activity
-        |> Ecto.build_assoc(:impressions, user_id: user.id)
-        |> Repo.insert()
+        {:ok, _} =
+          activity
+          |> Ecto.build_assoc(:impressions, user_id: user.id)
+          |> Repo.insert()
 
         {:ok, Repo.get(Activity, activity.id)}
     end
@@ -294,6 +339,7 @@ defmodule UnboardQlWeb.Resolvers do
     case Repo.get(Activity, activity_id) do
       nil ->
         {:error, "no such activity"}
+
       activity ->
         if activity.creator_id == user_id do
           Repo.delete(activity)

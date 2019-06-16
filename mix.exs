@@ -46,7 +46,8 @@ defmodule UnboardQl.MixProject do
       {:absinthe, "1.4.16"},
       {:absinthe_plug, "1.4.7"},
       {:httpoison, "0.9.1"},
-      {:cors_plug, "~> 2.0"}
+      {:cors_plug, "~> 2.0"},
+      {:con_cache, "0.13.1"}
     ]
   end
 
