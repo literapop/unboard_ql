@@ -72,4 +72,4 @@ config :unboard_ql, UnboardQl.Repo,
   username: "unboard_dev",
   password: "unboard_dev",
   hostname: "localhost",
-  pool_size: 10
+  pool_size: 100
