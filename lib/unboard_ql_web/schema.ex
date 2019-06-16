@@ -31,6 +31,7 @@ defmodule UnboardQlWeb.Schema do
     field :activities, list_of(:activity) do
       arg :sponsored, :boolean
       arg :creator_id, :integer
+      arg :type_id, :string
       resolve &Resolvers.list_activities/3
     end
 

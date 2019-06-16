@@ -52,6 +52,16 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, Repo.all(q)}
   end
 
+  def list_activities(_parent, %{type_id: type_id}, _resolution) do
+    q =
+      from(a in Activity,
+        where: a.type_id == ^type_id,
+        select: a
+      )
+
+    {:ok, Repo.all(q)}
+  end
+
   def list_activities(_parent, %{creator_id: creator_id}, _resolution) do
     q =
       from(a in Activity,
