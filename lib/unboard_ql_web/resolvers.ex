@@ -45,8 +45,13 @@ defmodule UnboardQlWeb.Resolvers do
     {:ok, Repo.all(q)}
   end
 
+  defp recent_activities() do
+    from(a in Activity,
+      order_by: [desc: :inserted_at])
+  end
+
   def list_activities(%{id: user_id}, _args, _resolution) do
-    q = from(a in Activity,
+    q = from(a in recent_activities(),
       where: a.creator_id == ^user_id,
       select: a)
     {:ok, Repo.all(q)}
@@ -54,7 +59,7 @@ defmodule UnboardQlWeb.Resolvers do
 
   def list_activities(_parent, %{type_id: type_id}, _resolution) do
     q =
-      from(a in Activity,
+      from(a in recent_activities(),
         where: a.type_id == ^type_id,
         select: a
       )
@@ -64,7 +69,7 @@ defmodule UnboardQlWeb.Resolvers do
 
   def list_activities(_parent, %{creator_id: creator_id}, _resolution) do
     q =
-      from(a in Activity,
+      from(a in recent_activities(),
         where: a.creator_id == ^creator_id,
         select: a
       )
@@ -74,7 +79,9 @@ defmodule UnboardQlWeb.Resolvers do
 
   def list_activities(_parent, _args, _resolution) do
     # {:ok, UnboardQl.Activities.list_posts()}
-    {:ok, Repo.all(Activity)}
+    q = from(a in recent_activities(),
+      select: a)
+    {:ok, Repo.all(q)}
   end
 
   def type(%{type_id: type_id} = _parent, _args, _resolution) when type_id == nil do
