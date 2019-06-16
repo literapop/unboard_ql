@@ -98,6 +98,6 @@ defmodule UnboardQl.Repo.Migrations.AddInitTables do
 
     UnboardQl.Repo.insert(%UnboardQl.Location{name: "Dig Buffalo", address1: "640 Ellicott St", city: "Buffalo", state: "NY", zip: "14203"})
 
-    UnboardQl.Repo.insert(%UnboardQl.Activity{name: "Code Buffalo", description: "Awesome Hackathon!!", location_id: 1, start_time: 1560551400, end_time: 1560706200, sponsored: true, accessibility: 0.3, price: 0.0, participant_capacity: 250, link: "https://www.43north.org/events/codebuffalo/", creator_id: 1})
+    UnboardQl.Repo.insert(%UnboardQl.Activity{name: "Code Buffalo", description: "Awesome Hackathon!!", location_id: 1, start_time: 1560551400, end_time: 1560706200, sponsored: true, accessibility: 0.3, price: 0.0, participant_capacity: 250, link: "https://www.43north.org/events/codebuffalo/", creator_id: 1, type_id: 6})
   end
 end
